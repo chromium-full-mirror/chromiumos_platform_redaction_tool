@@ -26,9 +26,12 @@ class LibMetricsMetricsTester : public MetricsTester {
   // redaction::MetricsTester:
   size_t GetBucketCount(base::StringPiece histogram_name,
                         int histogram_value) override;
+  size_t GetNumBucketEntries(base::StringPiece histogram_name) override;
   std::unique_ptr<RedactionToolMetricsRecorder> SetupRecorder() override;
 
  private:
+  FakeMetricsLibrary* fake_metrics_library();
+
   scoped_refptr<base::RefCountedData<std::unique_ptr<MetricsLibraryInterface>>>
     fake_metrics_library_;
 };
