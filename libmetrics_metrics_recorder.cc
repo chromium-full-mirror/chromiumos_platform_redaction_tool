@@ -33,6 +33,11 @@ void LibMetricsMetricsRecorder::RecordCreditCardRedactionHistogram(
   metrics_library_->data->SendEnumToUMA(kCreditCardRedactionHistogram, step);
 }
 
+void LibMetricsMetricsRecorder::RecordRedactionToolCallerHistogram(
+    RedactionToolCaller step) {
+  metrics_library_->data->SendEnumToUMA(kRedactionToolCallerHistogram, step);
+}
+
 void LibMetricsMetricsRecorder::RecordTimeSpentRedactingHistogram(
     base::TimeDelta elapsed_time) {
   metrics_library_->data->SendTimeToUMA(kTimeSpentRedactingHistogram,

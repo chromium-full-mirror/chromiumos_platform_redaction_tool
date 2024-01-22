@@ -513,6 +513,15 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("\"attested_device_id\"=\"-5CD045B0DZ\""));
   EXPECT_EQ("\"attested_device_id\"=\"5CD045B0DZ-\"",
             RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ-\""));
+  // redact lsusb's iSerial with a nonzero index.
+  EXPECT_EQ("iSerial    3 (Serial: 14)",
+            RedactCustomPatterns("iSerial    3 12345abcdEFG"));
+  // Do not redact lsusb's iSerial when the index is 0.
+  EXPECT_EQ("iSerial    0 ",
+            RedactCustomPatterns("iSerial    0 "));
+  // redact usbguard's serial number in syslog
+  EXPECT_EQ("serial \"(Serial: 15)\"",
+            RedactCustomPatterns("serial \"usb1234AA5678\""));
 
   // Valid PSM identifiers.
   EXPECT_EQ("PSM id: (PSM ID: 1)", RedactCustomPatterns("PSM id: ABCZ/123xx"));
@@ -529,12 +538,22 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("/root/123xx", RedactCustomPatterns("/root/123xx"));
   // PSM mention without whitespace, e.g. in base64-encoded data.
   EXPECT_EQ("PSM+ABCZ/123xx", RedactCustomPatterns("PSM+ABCZ/123xx"));
+  // PSM mention with only newline whitespace, e.g. in base64-encoded data.
+  EXPECT_EQ("PSM+\r\nABCZ/123xx", RedactCustomPatterns("PSM+\r\nABCZ/123xx"));
 
   EXPECT_EQ("\"gaia_id\":\"(GAIA: 1)\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));
   EXPECT_EQ("gaia_id='(GAIA: 2)'", RedactCustomPatterns("gaia_id='987654321'"));
   EXPECT_EQ("{id: (GAIA: 1), email:",
             RedactCustomPatterns("{id: 1234567890, email:"));
+  EXPECT_EQ("\"accountId\": \"(GAIA: 3)\"",
+            RedactCustomPatterns("\"accountId\": \"01234\""));
+  EXPECT_EQ("\"label\": \"Account Id\",\n  \"status\": \"(GAIA: 3)\"",
+            RedactCustomPatterns(
+                "\"label\": \"Account Id\",\n  \"status\": \"01234\""));
+  EXPECT_EQ(
+      "\"label\": \"Gaia Id\",\n  \"status\": \"(GAIA: 3)\"",
+      RedactCustomPatterns("\"label\": \"Gaia Id\",\n  \"status\": \"01234\""));
 
   EXPECT_EQ("(email: 1)", RedactCustomPatterns("foo@bar.com"));
   EXPECT_EQ("Email: (email: 1).", RedactCustomPatterns("Email: foo@bar.com."));
@@ -661,6 +680,25 @@ TEST_F(RedactionToolTest, RedactChunk) {
   redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnitTest, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogUploader, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogFetcher, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSupportTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kErrorReporting, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kBrowserSystemLogs, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUndetermined, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnknown, 0);
+
   using enum CreditCardDetection;
   ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 0);
   ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 0);
@@ -701,6 +739,24 @@ TEST_F(RedactionToolTest, RedactChunk) {
   // This isn't handled by the redaction tool but rather in Shill. It's part of
   // the enum for historical reasons.
   ExpectBucketCount(kPIIRedactedHistogram, PIIType::kEAP, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnitTest, 1);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogUploader, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogFetcher, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSupportTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kErrorReporting, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kBrowserSystemLogs, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUndetermined, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnknown, 0);
 
   ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 16);
   ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 2);
@@ -934,6 +990,7 @@ TEST_F(RedactionToolTest, RedactAndroidAppStoragePaths) {
       "key=value exe=/data/app/pack.age1/b_ key=value\n";
   EXPECT_EQ(kDuOutputRedacted, RedactAndroidAppStoragePaths(kDuOutput));
 }
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(RedactionToolTest, RedactBlockDevices) {
