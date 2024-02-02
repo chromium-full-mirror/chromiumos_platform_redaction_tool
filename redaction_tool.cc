@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -580,7 +578,6 @@ RedactionTool::RedactionTool(
       metrics_recorder_(std::move(metrics_recorder)) {
   CHECK(metrics_recorder_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  LOG(ERROR) << "donna 1/22";
   // Identity-map these, so we don't mangle them.
   for (const char* mac : kUnredactedMacAddresses) {
     mac_addresses_[mac] = mac;
