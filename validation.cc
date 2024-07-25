@@ -11,10 +11,11 @@
 
 #include "redaction_tool/validation.h"
 
+#include <string_view>
+
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace {

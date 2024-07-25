@@ -15,10 +15,10 @@
 // we have segregated it here.
 
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "redaction_tool/url_canon.h"
 
 namespace redaction_internal {

@@ -50,7 +50,7 @@ RedactionToolMetricsRecorder::Create() {
     "CrOS code. Instantiate LibMetricsMetricsRecorder explicitly instead.";
 }
 
-base::StringPiece
+std::string_view
 RedactionToolMetricsRecorder::GetTimeSpentRedactingHistogramNameForTesting() {
   return kTimeSpentRedactingHistogram;
 }

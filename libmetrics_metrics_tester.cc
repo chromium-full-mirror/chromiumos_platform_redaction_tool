@@ -4,6 +4,8 @@
 
 #include "redaction_tool/libmetrics_metrics_tester.h"
 
+#include <string_view>
+
 #include "base/ranges/algorithm.h"
 #include "redaction_tool/libmetrics_metrics_recorder.h"
 
@@ -13,15 +15,15 @@ std::unique_ptr<MetricsTester> MetricsTester::Create() {
   return std::make_unique<LibMetricsMetricsTester>();
 }
 
-size_t LibMetricsMetricsTester::GetBucketCount(base::StringPiece histogram_name,
-    int histogram_value) {
+size_t LibMetricsMetricsTester::GetBucketCount(std::string_view histogram_name,
+                                               int histogram_value) {
   return base::ranges::count(
       fake_metrics_library()->GetCalls(std::string(histogram_name)),
       histogram_value);
 }
 
 size_t LibMetricsMetricsTester::GetNumBucketEntries(
-    base::StringPiece histogram_name) {
+    std::string_view histogram_name) {
   return fake_metrics_library()->NumCalls(std::string(histogram_name));
 }
 

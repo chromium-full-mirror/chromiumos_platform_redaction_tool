@@ -24,9 +24,9 @@ class LibMetricsMetricsTester : public MetricsTester {
     ~LibMetricsMetricsTester() override = default;
 
   // redaction::MetricsTester:
-  size_t GetBucketCount(base::StringPiece histogram_name,
+  size_t GetBucketCount(std::string_view histogram_name,
                         int histogram_value) override;
-  size_t GetNumBucketEntries(base::StringPiece histogram_name) override;
+  size_t GetNumBucketEntries(std::string_view histogram_name) override;
   std::unique_ptr<RedactionToolMetricsRecorder> SetupRecorder() override;
 
  private:

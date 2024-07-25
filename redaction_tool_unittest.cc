@@ -5,7 +5,9 @@
 #include "redaction_tool/redaction_tool.h"
 
 #include <gtest/gtest.h>
+
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/location.h"
@@ -301,7 +303,7 @@ class RedactionToolTest : public testing::Test {
 
   template <typename T>
   void ExpectBucketCount(
-      const base::StringPiece histogram_name,
+      const std::string_view histogram_name,
       const T enum_value,
       const size_t expected_count,
       const base::Location location = base::Location::Current()) {
