@@ -46,7 +46,7 @@ void LibMetricsMetricsRecorder::RecordTimeSpentRedactingHistogram(
 
 std::unique_ptr<RedactionToolMetricsRecorder>
 RedactionToolMetricsRecorder::Create() {
-  NOTREACHED_NORETURN() << "Don't use RedactionToolMetricsRecorder::Create() in"
+  NOTREACHED() << "Don't use RedactionToolMetricsRecorder::Create() in"
     "CrOS code. Instantiate LibMetricsMetricsRecorder explicitly instead.";
 }
 
