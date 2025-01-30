@@ -4,9 +4,9 @@
 
 #include "redaction_tool/libmetrics_metrics_tester.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "redaction_tool/libmetrics_metrics_recorder.h"
 
 namespace redaction {
@@ -17,7 +17,7 @@ std::unique_ptr<MetricsTester> MetricsTester::Create() {
 
 size_t LibMetricsMetricsTester::GetBucketCount(std::string_view histogram_name,
                                                int histogram_value) {
-  return base::ranges::count(
+  return std::ranges::count(
       fake_metrics_library()->GetCalls(std::string(histogram_name)),
       histogram_value);
 }

@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <set>
 #include <string_view>
 #include <utility>
@@ -741,7 +742,7 @@ TEST_F(RedactionToolTest, RedactChunk) {
   for (int enum_int = static_cast<int>(PIIType::kNone) + 1;
        enum_int <= static_cast<int>(PIIType::kMaxValue); ++enum_int) {
     const PIIType enum_value = static_cast<PIIType>(enum_int);
-    const size_t expected_count = base::ranges::count_if(
+    const size_t expected_count = std::ranges::count_if(
         kStringsWithRedactions,
         [enum_value](const StringWithRedaction& string_with_redaction) {
           return string_with_redaction.pii_type == enum_value;
