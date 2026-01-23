@@ -11,10 +11,10 @@
 
 #include "redaction_tool/validation.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/containers/adapters.h"
-#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
@@ -173,7 +173,7 @@ bool HasCorrectLength(const std::string& number) {
     return false;
   }
   const std::vector<char> kUnlikelyIin{'0', '7', '8', '9'};
-  if (base::Contains(kUnlikelyIin, number.front())) {
+  if (std::ranges::contains(kUnlikelyIin, number.front())) {
     return false;
   }
 
