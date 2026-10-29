@@ -580,7 +580,7 @@ constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 bool IsFeatureEnabled(const base::Feature& feature) {
   return base::FeatureList::GetInstance()
              ? base::FeatureList::IsEnabled(feature)
-             : feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
+             : feature.GetDefaultState() == base::FEATURE_ENABLED_BY_DEFAULT;
 }
 }  // namespace
 
